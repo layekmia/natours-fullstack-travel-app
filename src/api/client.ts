@@ -1,0 +1,40 @@
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { ApiError } from '../types';
+
+// Create axios instance with type safety
+const apiClient: AxiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+    timeout: 3000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    withCredentials: true
+})
+
+// Request interceptor with proper typing
+apiClient.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+        return config;
+    },
+    (error: AxiosError) => {
+        return Promise.reject(error)
+    }
+)
+
+// Response interceptor
+apiClient.interceptors.response.use(
+    (response) => {
+        return response.data;
+    },
+    (error: AxiosError<ApiError>) => {
+        // Handle unauthorized (cookie expired / invalid)
+        if (error.response?.status === 401) {
+            // optional: redirect to login
+            window.location.href = "/login";
+        }
+
+        return Promise.reject(error);
+    }
+)
+
+export default apiClient;
