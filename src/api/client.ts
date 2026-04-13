@@ -27,11 +27,6 @@ apiClient.interceptors.response.use(
         return response.data;
     },
     (error: AxiosError<ApiError>) => {
-        // Handle unauthorized (cookie expired / invalid)
-        if (error.response?.status === 401) {
-            // optional: redirect to login
-            window.location.href = "/login";
-        }
 
         return Promise.reject(error);
     }
