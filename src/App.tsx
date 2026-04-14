@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { Navbar } from "./components/layouts/Navbar";
 import Footer from "./components/layouts/Footer";
+import { Toaster } from "./components/ui/sonner";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -16,6 +17,7 @@ export default function App() {
           <Outlet />
         </main>
         <Footer />
+        <Toaster/>
       </div>
     </>
   );

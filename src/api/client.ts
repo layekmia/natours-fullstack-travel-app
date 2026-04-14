@@ -4,7 +4,6 @@ import { ApiError } from '../types';
 // Create axios instance with type safety
 const apiClient: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    timeout: 3000,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -17,16 +16,18 @@ apiClient.interceptors.request.use(
         return config;
     },
     (error: AxiosError) => {
-        return Promise.reject(error)
+        return Promise.reject(error.response?.data)
     }
 )
 
 // Response interceptor
 apiClient.interceptors.response.use(
     (response) => {
+        console.log(response)
         return response.data;
     },
     (error: AxiosError<ApiError>) => {
+        console.log(error.response?.data)
 
         return Promise.reject(error);
     }

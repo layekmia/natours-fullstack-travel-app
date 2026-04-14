@@ -1,3 +1,4 @@
+import { Booking } from "./booking.types";
 import { User } from "./user.types";
 
 export type Difficulty = 'easy' | 'medium' | 'difficult';
@@ -42,6 +43,7 @@ export interface Tour {
     locations: Location[];
     guides: Guide[];
     reviews?: Review[];
+    bookingCount:number;
     createdAt: string;
     updatedAt: string;
 }
@@ -50,7 +52,7 @@ export interface Review {
     _id: string;
     review: string;
     rating: number;
-    tour: string | Tour;
+    tour: Tour;
     user: User;
     createdAt: string;
     updatedAt: string;
@@ -80,4 +82,27 @@ export interface MonthlyPlan {
     };
     numTourStarts: number;
     tours: string[];
+}
+
+// Tour Stats
+
+export interface TourStats {
+    _id: string;
+    numTours: number,
+    numRatings: number,
+    avgRating: number,
+    minRating: number,
+    maxRating: number,
+    avgPrice: number,
+    minPrice: number,
+    maxPrice: number
+}
+
+export interface AdminStats {
+    totalTours: number;
+    totalUsers: number;
+    totalBookings: number;
+    totalRevenue: number;
+    recentBookings: Booking[],
+    popularTours: Tour[]
 }

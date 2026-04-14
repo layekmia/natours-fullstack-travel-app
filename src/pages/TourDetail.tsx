@@ -1,18 +1,22 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toursAPI } from "@/api/tours";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import { TourSkeleton } from "@/components/tours/TourSkeleton";
 import { TourMap } from "@/components/tours/TourMap";
 import { TourReviews } from "@/components/tours/TourReviews";
 import { TourItinerary } from "@/components/tours/TourItinerary";
 import { TourGuides } from "@/components/tours/TourGuides";
 import { BookingButton } from "@/components/tours/BookingButton";
+import { bookingsAPI } from "@/api/bookings";
+import { useAuth } from "@/context/AuthContext";
+import { Booking } from "@/types";
 
 export const TourDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["tour", id],
@@ -21,6 +25,16 @@ export const TourDetail = () => {
   });
 
   const tour = data?.data;
+
+  const { data: myBookings, isLoading: bookingLoading } = useQuery({
+    queryKey: ["my-bookings"],
+    queryFn: () => bookingsAPI.getMyBookings(),
+    enabled: isAuthenticated,
+  });
+
+  const isAlreadyBooked = myBookings?.data?.some(
+    (booking: Booking) => booking.tour?._id === tour?._id,
+  );
 
   if (isLoading) {
     return (
@@ -225,11 +239,25 @@ export const TourDetail = () => {
                 </div>
               </div>
 
-              <BookingButton
-                tourId={tour._id}
-                tourName={tour.name}
-                price={tour.price}
-              />
+              {isAlreadyBooked ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 rounded-lg p-3">
+                    <CheckCircle className="h-5 w-5" />
+                    <span className="font-medium">Already Booked!</span>
+                  </div>
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link to="/my-bookings">View My Bookings</Link>
+                  </Button>
+                </div>
+              ) : (
+                !bookingLoading && (
+                  <BookingButton
+                    tourId={tour._id}
+                    tourName={tour.name}
+                    price={tour.price}
+                  />
+                )
+              )}
 
               <p className="text-xs text-gray-500 text-center mt-4">
                 Free cancellation up to 30 days before tour

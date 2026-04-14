@@ -4,7 +4,8 @@ import { ApiResponse, Review, CreateReviewData, UpdateReviewData } from '../type
 export const reviewsAPI = {
     getTourReviews: (tourId: string): Promise<ApiResponse<Review[]>> =>
         apiClient.get(`/tours/${tourId}/reviews`),
-
+    getMyReviews: (): Promise<ApiResponse<Review[]>> =>
+        apiClient.get('/reviews/my-reviews'),
     createReview: (tourId: string, data: CreateReviewData): Promise<ApiResponse<Review>> =>
         apiClient.post(`/tours/${tourId}/reviews`, data),
 
