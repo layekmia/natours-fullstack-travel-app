@@ -12,7 +12,7 @@ export default function App() {
     <>
       <div className="relative">
         <Navbar />
-        <main>
+        <main className="min-h-screen">
           <Outlet />
         </main>
         <Footer />
