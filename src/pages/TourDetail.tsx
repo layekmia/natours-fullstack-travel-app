@@ -4,7 +4,11 @@ import { toursAPI } from "@/api/tours";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { TourSkeleton } from "@/components/tours/TourSkeleton";
-import { TourMap } from "@/components/tours/TourMap"; // ✅ Add this import
+import { TourMap } from "@/components/tours/TourMap";
+import { TourReviews } from "@/components/tours/TourReviews";
+import { TourItinerary } from "@/components/tours/TourItinerary";
+import { TourGuides } from "@/components/tours/TourGuides";
+import { BookingButton } from "@/components/tours/BookingButton";
 
 export const TourDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -135,7 +139,16 @@ export const TourDetail = () => {
                 />
               )}
 
-            {/* Images Gallery */}
+            {tour.locations && tour.locations.length > 0 && (
+              <TourItinerary
+                locations={tour.locations}
+                duration={tour.duration}
+              />
+            )}
+            {tour.guides && tour.guides.length > 0 && (
+              <TourGuides guides={tour.guides} />
+            )}
+
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h2 className="text-2xl font-bold mb-4">Tour Gallery</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -174,6 +187,7 @@ export const TourDetail = () => {
                 )}
               </div>
             </div>
+            <TourReviews tourId={tour._id} />
           </div>
 
           {/* Right Column - Booking Card */}
@@ -211,13 +225,26 @@ export const TourDetail = () => {
                 </div>
               </div>
 
-              <Button className="w-full" size="lg">
-                Book Now
-              </Button>
+              <BookingButton
+                tourId={tour._id}
+                tourName={tour.name}
+                price={tour.price}
+              />
 
               <p className="text-xs text-gray-500 text-center mt-4">
                 Free cancellation up to 30 days before tour
               </p>
+
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                  <span>Secure SSL encrypted payment</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                  <span>Instant booking confirmation</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

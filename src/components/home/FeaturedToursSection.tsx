@@ -56,7 +56,7 @@ export const FeaturedToursSection = () => {
           {featuredTours.slice(0, 3).map((tour) => (
             <Card
               key={tour._id}
-              className="group overflow-hidden hover:shadow-xl transition-all duration-300"
+              className="group overflow-hidden hover:shadow-xl transition-all duration-300 py-0"
             >
               <div className="relative overflow-hidden h-48">
                 <img
