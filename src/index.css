@@ -7,6 +7,9 @@
 
 @import "tailwindcss";
 
+/* Leaflet CSS */
+@import "leaflet/dist/leaflet.css";
+
 @theme {
   /* Colors */
   --color-primary-50: #f0fdf4;
