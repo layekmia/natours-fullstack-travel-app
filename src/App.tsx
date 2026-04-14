@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
-import Footer from "./components/common/Footer";
-import Header from "./components/common/Header";
 import { useAuth } from "./context/AuthContext";
+import { Navbar } from "./components/layouts/Navbar";
+import Footer from "./components/layouts/Footer";
 
 export default function App() {
   const { isLoading } = useAuth();
@@ -11,7 +11,7 @@ export default function App() {
   return (
     <>
       <div className="relative">
-        <Header />
+        <Navbar />
         <main>
           <Outlet />
         </main>
