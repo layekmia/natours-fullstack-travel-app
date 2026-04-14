@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 export default function Tours() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sortBy, setSortBy] = useState("-createdAt");
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
@@ -24,31 +25,31 @@ export default function Tours() {
 
   // Build query params
   const buildQueryParams = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const params: any = {
       page: currentPage,
       limit: 9,
       sort: sortBy,
     };
-
-    if (searchQuery) {
-      params.search = searchQuery;
+    if (debouncedSearch) {
+      params.search = debouncedSearch;
     }
 
     if (filters.difficulty.length > 0) {
       params.difficulty = filters.difficulty.join(",");
     }
 
-    if (filters.priceRange[0] > 0) {
+    if (filters.priceRange[0]! > 0) {
       params["price[gte]"] = filters.priceRange[0];
     }
-    if (filters.priceRange[1] < 2000) {
+    if (filters.priceRange[1]! < 2000) {
       params["price[lte]"] = filters.priceRange[1];
     }
 
-    if (filters.duration[0] > 0) {
+    if (filters.duration[0]! > 0) {
       params["duration[gte]"] = filters.duration[0];
     }
-    if (filters.duration[1] < 30) {
+    if (filters.duration[1]! < 30) {
       params["duration[lte]"] = filters.duration[1];
     }
 
@@ -59,19 +60,24 @@ export default function Tours() {
     return params;
   };
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["tours", buildQueryParams()],
+  const { data, isLoading } = useQuery({
+    queryKey: ["tours", currentPage, sortBy, debouncedSearch, filters],
     queryFn: () => toursAPI.getAllTours(buildQueryParams()),
   });
 
   useEffect(() => {
-    refetch();
-  }, [currentPage, sortBy, searchQuery, filters, refetch]);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const tours = data?.data || [];
   const totalResults = data?.results || 0;
   const totalPages = Math.ceil(totalResults / 9);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFilterChange = (key: string, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
@@ -136,9 +142,9 @@ export default function Tours() {
           </div>
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex gap-5">
           {/* Desktop Filters Sidebar */}
-          <div className="hidden md:block w-80">
+          <div className="hidden md:block w-70">
             <TourFilters
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -172,7 +178,7 @@ export default function Tours() {
               </div>
             ) : (
               /* Tours Grid */
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {tours.map((tour) => (
                   <TourCard key={tour._id} tour={tour} />
                 ))}

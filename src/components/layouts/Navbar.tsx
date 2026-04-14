@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import Logo from "@/components/common/Logo";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,19 +10,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/context/AuthContext";
 import {
-  Menu,
-  X,
-  Compass,
-  User,
   Calendar,
-  Star,
-  LogOut,
+  Compass,
   Home,
+  LogOut,
+  Menu,
   Settings,
+  Star,
+  User
 } from "lucide-react";
-import Logo from "@/components/common/Logo";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -45,8 +44,6 @@ export const Navbar = () => {
     { name: "My Bookings", href: "/my-bookings", icon: Calendar },
     { name: "My Reviews", href: "/my-reviews", icon: Star },
   ];
-
-  console.log(user);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -148,27 +145,21 @@ export const Navbar = () => {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-            <div className="flex flex-col space-y-6 mt-6">
-              {/* Mobile Logo */}
-              <div className="flex items-center justify-between">
+
+          <SheetContent side="right" className="w-[300px] sm:w-[400px] p-6">
+            <div className="flex flex-col h-full">
+              {/* Logo */}
+              <div className="mb-6">
                 <Logo />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
               </div>
 
-              {/* Mobile Navigation Links */}
-              <div className="flex flex-col space-y-4">
+              {/* Navigation */}
+              <div className="flex flex-col gap-4 flex-1">
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     to={link.href}
-                    className="flex items-center space-x-2 text-base font-medium text-gray-700 transition-colors hover:text-primary-600"
+                    className="flex items-center gap-2 text-base font-medium text-gray-700 hover:text-primary-600"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <link.icon className="h-4 w-4" />
@@ -181,71 +172,67 @@ export const Navbar = () => {
                     <Link
                       key={link.name}
                       to={link.href}
-                      className="flex items-center space-x-2 text-base font-medium text-gray-700 transition-colors hover:text-primary-600"
+                      className="flex items-center gap-2 text-base font-medium text-gray-700 hover:text-primary-600"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <link.icon className="h-4 w-4" />
                       <span>{link.name}</span>
                     </Link>
                   ))}
+              </div>
 
-                {isAuthenticated && (
+              {/* Bottom Section */}
+              <div className="mt-auto pt-6 border-t">
+                {isAuthenticated ? (
                   <>
-                    <div className="border-t pt-4 mt-2">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={user?.photo} />
-                          <AvatarFallback>
-                            {user?.name?.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{user?.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {user?.email}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start"
-                          onClick={() => {
-                            navigate("/profile");
-                            setMobileMenuOpen(false);
-                          }}
-                        >
-                          <User className="mr-2 h-4 w-4" />
-                          Profile
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
-                          onClick={handleLogout}
-                        >
-                          <LogOut className="mr-2 h-4 w-4" />
-                          Log out
-                        </Button>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.photo} />
+                        <AvatarFallback>
+                          {user?.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
-                  </>
-                )}
 
-                {!isAuthenticated && (
-                  <div className="flex flex-col space-y-2 pt-4 border-t">
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="ghost"
+                        className="justify-start"
+                        onClick={() => {
+                          navigate("/profile");
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        className="justify-start text-red-600 hover:bg-red-50"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log out
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-2">
                     <Button
                       onClick={() => navigate("/login")}
                       variant="outline"
-                      className="w-full"
                     >
                       Log in
                     </Button>
-                    <Button
-                      onClick={() => navigate("/signup")}
-                      className="w-full"
-                    >
-                      Sign up
-                    </Button>
+
+                    <Button onClick={() => navigate("/signup")}>Sign up</Button>
                   </div>
                 )}
               </div>

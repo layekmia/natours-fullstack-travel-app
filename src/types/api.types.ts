@@ -1,10 +1,11 @@
 
 // Generic API Response wrapper
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ApiResponse<T = any> {
     success: boolean;
     data: T,
     message?: string;
-    result?: number;
+    results?: number;
 }
 
 // Error response from backend

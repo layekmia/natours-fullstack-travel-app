@@ -12,6 +12,7 @@ interface TourFiltersProps {
     rating: number;
     duration: number[];
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onFilterChange: (key: string, value: any) => void;
   onClearFilters: () => void;
 }
@@ -29,11 +30,11 @@ export const TourFilters = ({
 }: TourFiltersProps) => {
   const hasActiveFilters =
     filters.difficulty.length > 0 ||
-    filters.priceRange[0] > 0 ||
-    filters.priceRange[1] < 2000 ||
+    filters.priceRange[0]! > 0 ||
+    filters.priceRange[1]! < 2000 ||
     filters.rating > 0 ||
-    filters.duration[0] > 0 ||
-    filters.duration[1] < 30;
+    filters.duration[0]! > 0 ||
+    filters.duration[1]! < 30;
 
   return (
     <Card className="sticky top-24">
