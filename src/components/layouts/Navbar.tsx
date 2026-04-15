@@ -11,22 +11,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 import {
   Calendar,
   Compass,
   Home,
+  LayoutDashboard,
   LogOut,
   Menu,
   Settings,
+  Shield,
   Star,
   User,
-  Shield,
-  Grid,
-  LayoutDashboard,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "../common/ThemeToggle";
 
 export const Navbar = () => {
@@ -75,7 +74,7 @@ export const Navbar = () => {
               className={cn(
                 "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1",
                 isActive(link.href)
-                  ? "bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400"
+                  ? "bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400"
                   : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 dark:hover:text-primary-400",
               )}
             >
@@ -91,7 +90,7 @@ export const Navbar = () => {
                 className={cn(
                   "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1",
                   isActive(link.href)
-                    ? "bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400"
+                    ? "bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 dark:hover:text-primary-400",
                 )}
               >
@@ -105,7 +104,7 @@ export const Navbar = () => {
               className={cn(
                 "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1",
                 isActive("/admin")
-                  ? "bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400"
+                  ? "bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400"
                   : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 dark:hover:text-primary-400",
               )}
             >
@@ -221,7 +220,7 @@ export const Navbar = () => {
                       className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-all duration-200",
                         isActive(link.href)
-                          ? "bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400"
+                          ? "bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400"
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                       )}
                       onClick={() => setMobileMenuOpen(false)}
@@ -239,7 +238,7 @@ export const Navbar = () => {
                         className={cn(
                           "flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-all duration-200",
                           isActive(link.href)
-                            ? "bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400"
+                            ? "bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400"
                             : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                         )}
                         onClick={() => setMobileMenuOpen(false)}
@@ -255,7 +254,7 @@ export const Navbar = () => {
                       className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-all duration-200",
                         isActive("/admin")
-                          ? "bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400"
+                          ? "bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400"
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                       )}
                       onClick={() => setMobileMenuOpen(false)}
