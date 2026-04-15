@@ -1,24 +1,12 @@
 import { Location } from "@/types";
 import {
-  Bed,
-  Camera,
-  Coffee,
-  Info,
-  MapPin,
-  Mountain,
-  Sun,
-  Utensils,
+  MapPin
 } from "lucide-react";
 
 interface TourItineraryProps {
   locations: Location[];
   duration: number;
 }
-
-const getDayIcon = (day: number) => {
-  const icons = [Sun, Mountain, Camera, Utensils, Coffee, Bed];
-  return icons[day % icons.length] || MapPin;
-};
 
 const getActivityType = (description: string): string => {
   const lowerDesc = description.toLowerCase();
@@ -69,7 +57,7 @@ const getActivityColor = (type: string): string => {
     "Water Activity": "bg-cyan-100 text-cyan-700 border-cyan-200",
     Activity: "bg-gray-100 text-gray-700 border-gray-200",
   };
-  return colors[type] || colors["Activity"];
+  return colors[type] || (colors["Activity"] as string);
 };
 
 export const TourItinerary = ({ locations, duration }: TourItineraryProps) => {
@@ -103,9 +91,6 @@ export const TourItinerary = ({ locations, duration }: TourItineraryProps) => {
         {/* Itinerary Items */}
         <div className="space-y-6">
           {fullItinerary.map((item, index) => {
-            const Icon = item.location
-              ? getDayIcon(item.location.day || item.day)
-              : Info;
             const activityType = item.location
               ? getActivityType(item.location.description)
               : "Free Day";

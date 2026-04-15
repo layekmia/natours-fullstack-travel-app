@@ -1,4 +1,4 @@
-import { ApiResponse, ForgotPasswordData, LoginCredentials, ResetPasswordData, SignUpData, UpdatePasswordData, User } from "@/types";
+import { ApiResponse, LoginCredentials, SignUpData, UpdatePasswordData, User } from "@/types";
 import apiClient from "./client";
 
 export const authAPI = {
@@ -10,11 +10,11 @@ export const authAPI = {
     logout: (): Promise<ApiResponse<null>> =>
         apiClient.get("/users/logout"),
 
-    forgotPassword: (data: ForgotPasswordData): Promise<ApiResponse<null>> =>
-        apiClient.post('/users/forgotPassword', data),
+    forgotPassword: (email: string): Promise<ApiResponse<{ message: string }>> =>
+        apiClient.post("/users/forgotPassword", { email }),
 
-    resetPassword: (data: ResetPasswordData): Promise<ApiResponse<User>> =>
-        apiClient.post('/users/resetPassword', data),
+    resetPassword: (token: string, password: string, confirmPassword: string): Promise<ApiResponse<{ token: string; data: User }>> =>
+        apiClient.patch(`/users/resetPassword/${token}`, { password, confirmPassword }),
 
     updatePassword: (data: UpdatePasswordData): Promise<ApiResponse<User>> =>
         apiClient.patch('/users/updatePassword', data)

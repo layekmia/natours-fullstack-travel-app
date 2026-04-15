@@ -31,7 +31,7 @@ export interface UpdateProfileData {
 }
 
 export interface UpdatePasswordData {
-  passwordCurrent: string;
+  currentPassword: string;
   password: string;
   confirmPassword: string;
 }

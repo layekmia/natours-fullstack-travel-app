@@ -1,11 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { User } from '@/types';
+import { Guide } from '@/types';
 import { Award, Calendar, Mail, MapPin, Star, Users } from 'lucide-react';
 
 interface TourGuidesProps {
-  guides: User[];
+  guides: Guide[];
 }
 
 const getRoleBadgeColor = (role: string) => {

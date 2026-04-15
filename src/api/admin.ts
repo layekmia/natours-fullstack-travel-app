@@ -1,5 +1,5 @@
+import { AdminStats, ApiResponse, Booking, Guide, Review, Tour, User } from '@/types';
 import apiClient from './client';
-import { AdminStats, ApiResponse, Booking, Guide, Tour, User } from '@/types';
 
 export const adminAPI = {
     getStats: (): Promise<ApiResponse<AdminStats>> =>
@@ -8,19 +8,25 @@ export const adminAPI = {
     getAllTours: (): Promise<ApiResponse<Tour[]>> =>
         apiClient.get('/tours'),
 
-    getAllUsers: (): Promise<ApiResponse<User[]>> =>
-        apiClient.get('/users'),
+    getAllUsers: (params?: { page?: number; limit?: number; search?: string }): Promise<ApiResponse<User[]>> =>
+        apiClient.get("/users", { params }),
     getAllGuides: (): Promise<ApiResponse<Guide[]>> => apiClient.get('/admin/guides'),
 
-    getAllBookings: (): Promise<ApiResponse<Booking[]>> =>
-        apiClient.get('/bookings'),
+    getAllBookings: (params?: { page?: number; limit?: number; search?: string }): Promise<ApiResponse<Booking[]>> =>
+        apiClient.get("/bookings", { params }),
+
+    getAllReviews: (params?: { page?: number; limit?: number; search?: string }): Promise<ApiResponse<Review[]>> =>
+        apiClient.get("/reviews", { params }),
+
+    deleteReview: (id: string) => apiClient.delete(`/reviews/${id}`),
+    deleteBooking: (id: string) => apiClient.delete(`/admin/bookings/:${id}`),
 
     deleteTour: (id: string): Promise<ApiResponse<null>> =>
         apiClient.delete(`/admin/tours/${id}`),
 
     deleteUser: (id: string): Promise<ApiResponse<null>> =>
-        apiClient.delete(`/admin/users/${id}`),
+        apiClient.delete(`/users/${id}`),
 
     updateUserRole: (id: string, role: string): Promise<ApiResponse<any>> =>
-        apiClient.patch(`/admin/users/${id}/role`, { role }),
+        apiClient.patch(`/admin/${id}/role`, { role }),
 };

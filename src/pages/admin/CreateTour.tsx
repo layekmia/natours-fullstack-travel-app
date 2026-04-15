@@ -1,8 +1,7 @@
 import { adminAPI } from "@/api/admin";
-import { toursAPI } from "@/api/tours";
 import { TourForm } from "@/components/admin/TourForm";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Clock, Mountain, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -78,8 +77,7 @@ export function CreateTour() {
               </p>
             </div>
             <div className="p-6">
-              <TourForm availableGuides={guides} />
-              onSuccess={refetchTours}
+              <TourForm availableGuides={guides} onSuccess={refetchTours} />
             </div>
           </div>
         </div>

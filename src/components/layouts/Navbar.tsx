@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ToggleTheme } from "../common/ThemeToggle";
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -76,6 +77,8 @@ export const Navbar = () => {
               </Link>
             ))}
         </div>
+
+        <ToggleTheme/>
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex md:items-center md:space-x-4">

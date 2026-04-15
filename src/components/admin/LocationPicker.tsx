@@ -1,5 +1,3 @@
-"use client";
-
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { useEffect, useState } from "react";
 
@@ -16,7 +14,7 @@ function MarkerHandler({ value, onChange }: Props) {
   }, [value]);
 
   useMapEvents({
-    click(e) {
+    click(e: any) {
       const coords: [number, number] = [e.latlng.lng, e.latlng.lat];
       setPos(coords);
       onChange(coords);
@@ -30,6 +28,7 @@ export default function LocationMapPicker({ value, onChange }: Props) {
   return (
     <div className="h-[220px] rounded-lg overflow-hidden border">
       <MapContainer
+      // @ts-ignore
         center={[23.8103, 90.4125]}
         zoom={7}
         className="h-full w-full"

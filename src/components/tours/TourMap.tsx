@@ -38,6 +38,7 @@ export const TourMap = ({ startLocation, locations }: TourMapProps) => {
       <h2 className="text-2xl font-bold mb-4">Tour Locations</h2>
       <div className="rounded-lg overflow-hidden">
         <MapContainer
+        // @ts-ignore
           center={center}
           zoom={6}
           style={{ height: "400px", width: "100%" }}
@@ -45,9 +46,9 @@ export const TourMap = ({ startLocation, locations }: TourMapProps) => {
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            // @ts-ignore
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-
           {/* Start Location Marker */}
           <Marker
             position={[
@@ -63,7 +64,6 @@ export const TourMap = ({ startLocation, locations }: TourMapProps) => {
               </div>
             </Popup>
           </Marker>
-
           {/* Tour Locations Markers */}
           {locations.map((location, index) => (
             <Marker
@@ -79,10 +79,10 @@ export const TourMap = ({ startLocation, locations }: TourMapProps) => {
               </Popup>
             </Marker>
           ))}
-
           {/* Path Line */}
           <Polyline
             positions={pathCoordinates}
+            // @ts-ignore
             color="#22c55e"
             weight={3}
             opacity={0.7}

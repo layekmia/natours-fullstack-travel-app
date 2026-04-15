@@ -7,12 +7,15 @@ import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import { queryClient } from "./lib/react-query";
 import { router } from "./routes/router";
+import { ThemeProvider } from "./context/theme-provider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <RouterProvider router={router} />
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <RouterProvider router={router} />
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   </React.StrictMode>,

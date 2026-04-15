@@ -1,7 +1,8 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { adminAPI } from "@/api/admin";
 import { toursAPI } from "@/api/tours";
 import { TourForm } from "@/components/admin/TourForm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,11 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { adminAPI } from "@/api/admin";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function EditTour() {
   const { id } = useParams<{ id: string }>();
