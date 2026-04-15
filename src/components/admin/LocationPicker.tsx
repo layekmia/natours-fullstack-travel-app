@@ -28,7 +28,7 @@ export default function LocationMapPicker({ value, onChange }: Props) {
   return (
     <div className="h-[220px] rounded-lg overflow-hidden border">
       <MapContainer
-      // @ts-ignore
+        // @ts-ignore
         center={[23.8103, 90.4125]}
         zoom={7}
         className="h-full w-full"
