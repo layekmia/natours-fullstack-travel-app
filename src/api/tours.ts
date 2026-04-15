@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import { ApiResponse, Tour, TourStats, MonthlyPlan, PaginationParams, TourFilters } from '../types';
+import { ApiResponse, Tour, TourStats, MonthlyPlan, PaginationParams, TourFilters, TourDataPayload } from '../types';
 
 interface GetToursParams extends PaginationParams, Partial<TourFilters> {
     'price[gte]'?: number;
@@ -25,17 +25,16 @@ export const toursAPI = {
 
     getTopTours: (): Promise<ApiResponse<Tour[]>> => apiClient.get('/tours/top-5-cheap'),
 
-    createTour: (formData: FormData): Promise<ApiResponse<Tour>> =>
-        apiClient.post('/tours', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        }),
+    createTour: (data: TourDataPayload): Promise<ApiResponse<Tour>> =>
+        apiClient.post('/tours', data),
 
-    updateTour: (id: string, data: Partial<Tour> | FormData): Promise<ApiResponse<Tour>> => {
-        const isFormData = data instanceof FormData;
-        return apiClient.patch(`/tours/${id}`, data, {
-            headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {}
-        });
+    updateTour: (id: string, data: TourDataPayload): Promise<ApiResponse<Tour>> => {
+        return apiClient.patch(`/tours/${id}`, data);
     },
+    uploadImages: (id: string, formData: FormData) =>
+        apiClient.patch(`/tours/${id}/images`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        }),
 
     deleteTour: (id: string): Promise<ApiResponse<null>> =>
         apiClient.delete(`/tours/${id}`),

@@ -36,14 +36,14 @@ export interface Tour {
     priceDiscount?: number;
     summary: string;
     description: string;
-    imageCover: string;
-    images: string[];
-    startDates: Date[];
+    imageCover?: string;
+    images?: string[];
+    startDates: string[];
     startLocation: StartLocation;
     locations: Location[];
     guides: Guide[];
     reviews?: Review[];
-    bookingCount:number;
+    bookingCount: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -84,19 +84,6 @@ export interface MonthlyPlan {
     tours: string[];
 }
 
-// Tour Stats
-
-export interface TourStats {
-    _id: string;
-    numTours: number,
-    numRatings: number,
-    avgRating: number,
-    minRating: number,
-    maxRating: number,
-    avgPrice: number,
-    minPrice: number,
-    maxPrice: number
-}
 
 export interface AdminStats {
     totalTours: number;
@@ -105,4 +92,30 @@ export interface AdminStats {
     totalRevenue: number;
     recentBookings: Booking[],
     popularTours: Tour[]
+}
+
+export interface TourDataPayload {
+    name: string;
+    duration: number;
+    maxGroupSize: number;
+    difficulty: "easy" | "medium" | "difficult";
+    price: number;
+    priceDiscount?: number;
+    summary?: string;
+    description: string;
+    startLocation: {
+        type: "Point";
+        coordinates: [number, number];
+        description: string;
+        address: string;
+    };
+    locations: Array<{
+        type: "Point";
+        coordinates: [number, number];
+        description: string;
+        address: string;
+        day: number;
+    }>;
+    guides: string[]; // Array of guide IDs
+    startDates: string[]; // ISO date strings
 }

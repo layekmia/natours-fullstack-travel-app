@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { AdminStats, ApiResponse, Booking, Tour, User } from '@/types';
+import { AdminStats, ApiResponse, Booking, Guide, Tour, User } from '@/types';
 
 export const adminAPI = {
     getStats: (): Promise<ApiResponse<AdminStats>> =>
@@ -10,6 +10,7 @@ export const adminAPI = {
 
     getAllUsers: (): Promise<ApiResponse<User[]>> =>
         apiClient.get('/users'),
+    getAllGuides: (): Promise<ApiResponse<Guide[]>> => apiClient.get('/admin/guides'),
 
     getAllBookings: (): Promise<ApiResponse<Booking[]>> =>
         apiClient.get('/bookings'),

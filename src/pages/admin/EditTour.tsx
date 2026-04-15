@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { adminAPI } from "@/api/admin";
 
 export function EditTour() {
   const { id } = useParams<{ id: string }>();
@@ -25,27 +26,19 @@ export function EditTour() {
     queryFn: () => toursAPI.getTour(id!),
     enabled: !!id,
   });
+  const { data: guideData } = useQuery({
+    queryKey: ["guides"],
+    queryFn: () => adminAPI.getAllGuides(),
+  });
+
+  const guides = guideData?.data || [];
 
   const tour = data?.data;
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
-      toursAPI.updateTour(id, formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-tours"] });
-      queryClient.invalidateQueries({ queryKey: ["tour", id] });
-      navigate("/admin/tours");
-    },
-    onError: (error: any) => {
-      console.error("Failed to update tour:", error);
-    },
-  });
+const refetchTours = () => {
+  queryClient.invalidateQueries({ queryKey: ["admin-tours"] });
+};
 
-  const handleSubmit = async (formData: FormData) => {
-    if (id) {
-      await updateMutation.mutateAsync({ id, formData });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -106,8 +99,8 @@ export function EditTour() {
         <CardContent>
           <TourForm
             initialData={tour}
-            onSubmit={handleSubmit}
-            isSubmitting={updateMutation.isPending}
+            availableGuides={guides}
+            onSuccess={refetchTours}
           />
         </CardContent>
       </Card>

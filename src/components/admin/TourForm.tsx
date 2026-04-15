@@ -1,21 +1,18 @@
-"use client";
-
-import { useState } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useState } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Field,
-  FieldLabel,
-  FieldError,
   FieldDescription,
+  FieldError,
   FieldGroup,
+  FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -23,84 +20,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
+import { TourFormData, tourSchema } from "@/schemas/tourSchema";
+import { Guide, Tour } from "@/types";
 import {
   AlertCircle,
-  Upload,
-  X,
+  Calendar,
+  MapPin,
   Plus,
   Trash2,
-  MapPin,
-  Calendar,
+  Upload,
+  X,
 } from "lucide-react";
-import { Tour } from "@/types";
-
-// -------------------- Complete Schema --------------------
-const locationSchema = z.object({
-  type: z.literal("Point"),
-  coordinates: z.tuple([z.number(), z.number()]),
-  address: z.string().min(1, "Address is required"),
-  description: z.string().min(1, "Description is required"),
-  day: z.number().optional(),
-});
-
-const startLocationSchema = z.object({
-  type: z.literal("Point"),
-  coordinates: z.tuple([z.number(), z.number()]),
-  address: z.string().min(1, "Address is required"),
-  description: z.string().min(1, "Description is required"),
-});
-
-const guideSchema = z.string(); // Guide ID
-
-const tourFormSchema = z.object({
-  // Basic info
-  name: z
-    .string()
-    .min(10, "Name must be at least 10 characters")
-    .max(40, "Name cannot exceed 40 characters"),
-  duration: z
-    .number()
-    .min(1, "Duration must be at least 1 day")
-    .max(30, "Duration cannot exceed 30 days"),
-  maxGroupSize: z
-    .number()
-    .min(1, "Group size must be at least 1")
-    .max(50, "Group size cannot exceed 50"),
-  difficulty: z.enum(["easy", "medium", "difficult"]),
-  price: z.number().min(0, "Price must be positive"),
-  priceDiscount: z.number().optional(),
-  summary: z.string().min(10, "Summary must be at least 10 characters"),
-  description: z.string().min(20, "Description must be at least 20 characters"),
-
-  // Start Location
-  startLocation: startLocationSchema,
-
-  // Locations array
-  locations: z.array(locationSchema).default([]),
-
-  // Guides array (guide IDs)
-  guides: z.array(guideSchema).default([]),
-
-  // Start Dates
-  startDates: z.array(z.string()).default([]),
-});
-
-type TourFormValues = z.infer<typeof tourFormSchema>;
+import MapPicker from "./LocationPicker";
+import LocationMapPicker from "./LocationPicker";
+import { toursAPI } from "@/api/tours";
 
 interface TourFormProps {
   initialData?: Tour;
-  onSubmit: (data: FormData) => Promise<void>;
-  isSubmitting: boolean;
-  availableGuides?: Array<{ _id: string; name: string; photo: string }>;
+  availableGuides?: Guide[];
+  onSuccess?: () => void;
 }
 
 // -------------------- Component --------------------
 export function TourForm({
   initialData,
-  onSubmit,
-  isSubmitting,
   availableGuides = [],
+  onSuccess,
 }: TourFormProps) {
   const navigate = useNavigate();
 
@@ -112,49 +58,81 @@ export function TourForm({
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>(
     initialData?.images || [],
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [localStartDates, setLocalStartDates] = useState<string[]>(
+    initialData?.startDates
+      ?.map((d) => new Date(d).toISOString().split("T")[0])
+      .filter((d): d is string => d !== undefined) || [],
+  );
+
   const [error, setError] = useState("");
 
-  const form = useForm<TourFormValues>({
-    resolver: zodResolver(tourFormSchema),
+  const form = useForm<TourFormData>({
+    resolver: zodResolver(tourSchema),
+
     defaultValues: initialData
       ? {
           name: initialData.name,
           duration: initialData.duration,
           maxGroupSize: initialData.maxGroupSize,
           difficulty: initialData.difficulty,
+
+          ratingAverage: initialData.ratingAverage,
+          ratingQuantity: initialData.ratingQuantity,
+
           price: initialData.price,
           priceDiscount: initialData.priceDiscount,
+
           summary: initialData.summary,
+
           description: initialData.description,
+          imageCover: initialData.imageCover,
+
+          images: initialData.images,
+
+          startDates: initialData.startDates,
+
           startLocation: initialData.startLocation,
-          locations: initialData.locations || [],
+
+          locations: initialData.locations,
+
           guides:
-            initialData.guides?.map((g) =>
-              typeof g === "string" ? g : g._id,
-            ) || [],
-          startDates:
-            initialData.startDates?.map(
-              (d) => new Date(d).toISOString().split("T")[0],
+            initialData?.guides?.map((guide) =>
+              typeof guide === "string" ? guide : guide._id,
             ) || [],
         }
       : {
           name: "",
           duration: 1,
-          maxGroupSize: 10,
+          maxGroupSize: 1,
           difficulty: "easy",
+
+          ratingAverage: undefined,
+          ratingQuantity: undefined,
+
           price: 0,
-          priceDiscount: 0,
+          priceDiscount: undefined,
+
           summary: "",
+
           description: "",
+          imageCover: "",
+
+          images: [],
+
+          startDates: [],
+
           startLocation: {
             type: "Point",
-            coordinates: [0, 0],
-            address: "",
+            coordinates: [0, 0] as [number, number],
             description: "",
+            address: "",
           },
+
           locations: [],
+
           guides: [],
-          startDates: [],
         },
   });
 
@@ -163,19 +141,34 @@ export function TourForm({
     fields: locationFields,
     append: appendLocation,
     remove: removeLocation,
-  } = useFieldArray({
+  } = useFieldArray<TourFormData>({
     control: form.control,
     name: "locations",
   });
 
-  const {
-    fields: dateFields,
-    append: appendDate,
-    remove: removeDate,
-  } = useFieldArray({
-    control: form.control,
-    name: "startDates",
-  });
+  const addStartDate = () => {
+    setLocalStartDates([...localStartDates, ""]);
+  };
+
+  const updateStartDate = (index: number, value: string) => {
+    const newDates = [...localStartDates];
+    newDates[index] = value;
+    setLocalStartDates(newDates);
+    // Also update form value
+    form.setValue(
+      "startDates",
+      newDates.map((d) => new Date(d).toISOString()),
+    );
+  };
+
+  const removeStartDate = (index: number) => {
+    const newDates = localStartDates.filter((_, i) => i !== index);
+    setLocalStartDates(newDates);
+    form.setValue(
+      "startDates",
+      newDates.map((d) => new Date(d).toISOString()),
+    );
+  };
 
   // Image Handlers
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,46 +192,66 @@ export function TourForm({
   };
 
   // Submit
-  const handleSubmit = async (values: TourFormValues) => {
-    setError("");
-    const formData = new FormData();
+  const handleSubmit = async (data: TourFormData) => {
+    try {
+      setError("");
+      setIsSubmitting(true);
 
-    // Basic fields
-    formData.append("name", values.name);
-    formData.append("duration", values.duration.toString());
-    formData.append("maxGroupSize", values.maxGroupSize.toString());
-    formData.append("difficulty", values.difficulty);
-    formData.append("price", values.price.toString());
-    if (values.priceDiscount)
-      formData.append("priceDiscount", values.priceDiscount.toString());
-    formData.append("summary", values.summary);
-    formData.append("description", values.description);
+      // Create/Update tour WITHOUT images (JSON data)
+      const tourData = {
+        name: data.name,
+        duration: Number(data.duration),
+        maxGroupSize: Number(data.maxGroupSize),
+        difficulty: data.difficulty,
+        price: Number(data.price),
+        priceDiscount: data.priceDiscount
+          ? Number(data.priceDiscount)
+          : undefined,
+        summary: data.summary,
+        description: data.description,
+        startLocation: data.startLocation,
+        locations: data.locations,
+        guides: data.guides,
+        startDates: data.startDates,
+      };
 
-    // Start Location
-    formData.append("startLocation", JSON.stringify(values.startLocation));
+      let tourId = initialData?._id;
 
-    // Locations array
-    formData.append("locations", JSON.stringify(values.locations));
+      if (initialData) {
+        // Update tour data
+        await toursAPI.updateTour(tourId as string, tourData);
+      } else {
+        // Create new tour
+        const response = await toursAPI.createTour(tourData);
+        tourId = response.data._id;
+      }
 
-    // Guides array
-    values.guides.forEach((guideId) => {
-      formData.append("guides", guideId);
-    });
+      // 2️⃣ Second: Upload images if any
+      if (coverImage || galleryImages.length > 0) {
+        const imageFormData = new FormData();
+        if (coverImage) imageFormData.append("imageCover", coverImage);
+        galleryImages.forEach((file) => imageFormData.append("images", file));
 
-    // Start Dates
-    values.startDates.forEach((date) => {
-      formData.append("startDates", new Date(date).toISOString());
-    });
+        await toursAPI.uploadImages(tourId as string, imageFormData);
+      }
 
-    // Images
-    if (coverImage) formData.append("imageCover", coverImage);
-    galleryImages.forEach((img) => formData.append("images", img));
-
-    await onSubmit(formData);
+      navigate("/admin/tours");
+      onSuccess?.();
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      setError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+    <form
+      onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+        console.log(errors);
+      })}
+      className="space-y-8"
+    >
       {/* ERROR */}
       {error && (
         <Alert variant="destructive">
@@ -389,7 +402,7 @@ export function TourForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel>Summary *</FieldLabel>
+            <FieldLabel>Summary </FieldLabel>
             <Textarea {...field} rows={2} />
             {fieldState.error && <FieldError errors={[fieldState.error]} />}
           </Field>
@@ -415,6 +428,7 @@ export function TourForm({
           <h3 className="text-lg font-semibold">Start Location</h3>
         </div>
 
+        {/* ADDRESS + DESCRIPTION */}
         <div className="grid md:grid-cols-2 gap-4">
           <Controller
             name="startLocation.address"
@@ -439,7 +453,29 @@ export function TourForm({
               </Field>
             )}
           />
+        </div>
 
+        {/* ================= MAP PICKER ================= */}
+        <div className="space-y-2">
+          <FieldLabel>Pick Location on Map *</FieldLabel>
+
+          <MapPicker
+            value={
+              (form.watch("startLocation.coordinates") as [number, number]) || [
+                90.4125, 23.8103,
+              ]
+            }
+            onChange={(coords) => {
+              form.setValue("startLocation.coordinates", coords, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+          />
+        </div>
+
+        {/* ================= MANUAL INPUTS (FALLBACK) ================= */}
+        <div className="grid md:grid-cols-2 gap-4">
           <Controller
             name="startLocation.coordinates.0"
             control={form.control}
@@ -449,8 +485,15 @@ export function TourForm({
                 <Input
                   type="number"
                   step="any"
-                  {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  value={field.value}
+                  onChange={(e) => {
+                    const lng = parseFloat(e.target.value || "0");
+                    const lat =
+                      form.getValues("startLocation.coordinates.1") || 0;
+
+                    field.onChange(lng);
+                    form.setValue("startLocation.coordinates", [lng, lat]);
+                  }}
                 />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </Field>
@@ -466,8 +509,15 @@ export function TourForm({
                 <Input
                   type="number"
                   step="any"
-                  {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  value={field.value}
+                  onChange={(e) => {
+                    const lat = parseFloat(e.target.value || "0");
+                    const lng =
+                      form.getValues("startLocation.coordinates.0") || 0;
+
+                    field.onChange(lat);
+                    form.setValue("startLocation.coordinates", [lng, lat]);
+                  }}
                 />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
               </Field>
@@ -485,6 +535,7 @@ export function TourForm({
               Tour Locations (Itinerary)
             </h3>
           </div>
+
           <Button
             type="button"
             size="sm"
@@ -503,100 +554,152 @@ export function TourForm({
           </Button>
         </div>
 
-        {locationFields.map((field, index) => (
-          <div key={field.id} className="border-t pt-4 relative">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute top-2 right-0"
-              onClick={() => removeLocation(index)}
-            >
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </Button>
+        {locationFields.map((field, index) => {
+          const coords = form.watch(`locations.${index}.coordinates`) as [
+            number,
+            number,
+          ];
 
-            <div className="grid md:grid-cols-2 gap-4 mt-6">
-              <Controller
-                name={`locations.${index}.day`}
-                control={form.control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Day</FieldLabel>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
-                    />
-                  </Field>
-                )}
-              />
+          return (
+            <div key={field.id} className="border-t pt-4 relative">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute top-2 right-0"
+                onClick={() => removeLocation(index)}
+              >
+                <Trash2 className="h-4 w-4 text-red-500" />
+              </Button>
 
-              <Controller
-                name={`locations.${index}.address`}
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Address *</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.error && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
+              <div className="grid md:grid-cols-2 gap-4 mt-6">
+                {/* DAY */}
+                <Controller
+                  name={`locations.${index}.day`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Day</FieldLabel>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
+                      />
+                    </Field>
+                  )}
+                />
 
-              <Controller
-                name={`locations.${index}.description`}
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Description *</FieldLabel>
-                    <Input {...field} />
-                    {fieldState.error && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
+                {/* ADDRESS */}
+                <Controller
+                  name={`locations.${index}.address`}
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel>Address *</FieldLabel>
+                      <Input {...field} />
+                      {fieldState.error && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
 
-              <Controller
-                name={`locations.${index}.coordinates.0`}
-                control={form.control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Longitude</FieldLabel>
-                    <Input
-                      type="number"
-                      step="any"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                  </Field>
-                )}
-              />
+                {/* DESCRIPTION */}
+                <Controller
+                  name={`locations.${index}.description`}
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel>Description *</FieldLabel>
+                      <Input {...field} />
+                      {fieldState.error && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
 
-              <Controller
-                name={`locations.${index}.coordinates.1`}
-                control={form.control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Latitude</FieldLabel>
-                    <Input
-                      type="number"
-                      step="any"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                  </Field>
-                )}
-              />
+                {/* ================= MAP ================= */}
+                <div className="col-span-2 space-y-2">
+                  <FieldLabel>Pick Location on Map</FieldLabel>
+
+                  <LocationMapPicker
+                    value={coords || [90.4125, 23.8103]}
+                    onChange={(newCoords) => {
+                      form.setValue(
+                        `locations.${index}.coordinates`,
+                        newCoords,
+                        {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        },
+                      );
+                    }}
+                  />
+                </div>
+
+                {/* ================= MANUAL INPUT (SYNCED) ================= */}
+                <Controller
+                  name={`locations.${index}.coordinates.0`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Longitude</FieldLabel>
+                      <Input
+                        type="number"
+                        step="any"
+                        value={field.value}
+                        onChange={(e) => {
+                          const lng = parseFloat(e.target.value || "0");
+                          const lat =
+                            form.getValues(
+                              `locations.${index}.coordinates.1`,
+                            ) || 0;
+
+                          field.onChange(lng);
+                          form.setValue(`locations.${index}.coordinates`, [
+                            lng,
+                            lat,
+                          ]);
+                        }}
+                      />
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name={`locations.${index}.coordinates.1`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Latitude</FieldLabel>
+                      <Input
+                        type="number"
+                        step="any"
+                        value={field.value}
+                        onChange={(e) => {
+                          const lat = parseFloat(e.target.value || "0");
+                          const lng =
+                            form.getValues(
+                              `locations.${index}.coordinates.0`,
+                            ) || 0;
+
+                          field.onChange(lat);
+                          form.setValue(`locations.${index}.coordinates`, [
+                            lng,
+                            lat,
+                          ]);
+                        }}
+                      />
+                    </Field>
+                  )}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* GUIDES */}
@@ -623,7 +726,7 @@ export function TourForm({
                 <SelectContent>
                   {availableGuides.map((guide) => (
                     <SelectItem key={guide._id} value={guide._id}>
-                      {guide.name}
+                      {`${guide.name} - ${guide.role}`}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -640,7 +743,9 @@ export function TourForm({
                 key={guideId}
                 className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1"
               >
-                <span className="text-sm">{guide?.name || guideId}</span>
+                <span className="text-sm">
+                  {guide?.name ? `${guide?.name} : (${guide?.role})` : guideId}
+                </span>
                 <button
                   type="button"
                   onClick={() => {
@@ -665,26 +770,25 @@ export function TourForm({
             <Calendar className="h-5 w-5" />
             <h3 className="text-lg font-semibold">Start Dates</h3>
           </div>
-          <Button type="button" size="sm" onClick={() => appendDate("")}>
+          <Button type="button" size="sm" onClick={addStartDate}>
             <Plus className="h-4 w-4 mr-1" />
             Add Date
           </Button>
         </div>
 
-        {dateFields.map((field, index) => (
-          <div key={field.id} className="flex gap-2 items-center">
-            <Controller
-              name={`startDates.${index}`}
-              control={form.control}
-              render={({ field }) => (
-                <Input type="date" {...field} className="flex-1" />
-              )}
+        {localStartDates.map((date, index) => (
+          <div key={index} className="flex gap-2 items-center">
+            <Input
+              type="date"
+              value={date}
+              onChange={(e) => updateStartDate(index, e.target.value)}
+              className="flex-1"
             />
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => removeDate(index)}
+              onClick={() => removeStartDate(index)}
             >
               <Trash2 className="h-4 w-4 text-red-500" />
             </Button>

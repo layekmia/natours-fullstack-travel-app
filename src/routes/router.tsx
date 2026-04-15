@@ -3,6 +3,7 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AdminTours } from "@/components/admin/AdminTours";
 import { CreateTour } from "@/pages/admin/CreateTour";
+import { EditTour } from "@/pages/admin/EditTour";
 import Error from "@/pages/Error";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "tours", element: <AdminTours /> },
       { path: "/admin/tours/create", element: <CreateTour /> },
+      { path: "/admin/tours/edit/:id", element: <EditTour /> },
     ],
   },
 ]);
