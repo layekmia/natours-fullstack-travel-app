@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthContext";
@@ -24,6 +24,9 @@ export function Signup({ className, ...props }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const {
     register,
@@ -45,7 +48,7 @@ export function Signup({ className, ...props }: React.ComponentProps<"div">) {
     });
 
     if (result.success) {
-      navigate("/");
+      navigate(from, { replace: true });
     } else {
       setServerError(result.error || "Signup failed. Please try again.");
     }

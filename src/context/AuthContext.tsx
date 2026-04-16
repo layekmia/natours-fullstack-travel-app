@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = async (): Promise<void> => {
     try {
       const response = await usersAPI.getMe();
-      console.log(response);
       setUser(response.data);
       setIsAuthenticated(true);
     } catch {
@@ -99,17 +98,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateUser = async (formData: FormData) => {
-    console.log(FormData);
     try {
       const response = await usersAPI.updateMe(formData);
-      console.log(response);
+
       const updatedUser = response.data;
-      console.log(updatedUser);
+
       setUser(updatedUser);
 
       return { success: true, user: updatedUser };
     } catch (error) {
-      console.log(error)
       const err = error as AxiosError<ApiResponse<any>>;
       return {
         success: false,

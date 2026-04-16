@@ -73,7 +73,6 @@ export function ChangePasswordForm() {
       setSuccess("Password changed successfully!");
       form.reset();
     } catch (err: any) {
-      console.log(err);
       setError(err.response?.data?.message || "Failed to change password");
     } finally {
       setIsLoading(false);

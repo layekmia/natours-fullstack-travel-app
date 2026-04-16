@@ -246,9 +246,7 @@ export function TourForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-        console.log(errors);
-      })}
+      onSubmit={form.handleSubmit(handleSubmit)}
       className="space-y-8"
     >
       {/* ERROR */}

@@ -23,11 +23,9 @@ apiClient.interceptors.request.use(
 // Response interceptor
 apiClient.interceptors.response.use(
     (response) => {
-        console.log(response)
         return response.data;
     },
     (error: AxiosError<ApiError>) => {
-        console.log(error.response?.data)
 
         return Promise.reject(error);
     }

@@ -21,6 +21,9 @@ import SignUp from "@/pages/SignUp";
 import { TourDetail } from "@/pages/TourDetail";
 import Tours from "@/pages/Tours";
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { RoleBasedRoute } from "./RoleBasedRoute";
+import { PublicRoute } from "./PublicRoute";
 
 export const router = createBrowserRouter([
   {
@@ -29,34 +32,50 @@ export const router = createBrowserRouter([
     errorElement: <Error />,
     children: [
       { index: true, element: <Home /> },
-      { path: "/auth/login", element: <Login /> },
-      { path: "/auth/signup", element: <SignUp /> },
-      { path: "/auth/forgot-password", element: <ForgotPassword /> },
-      { path: "/auth/reset-password/:token", element: <ResetPassword /> },
       { path: "/tours", element: <Tours /> },
       { path: "/tours/:id", element: <TourDetail /> },
-      { path: "/my-bookings", element: <MyBookings /> },
-      { path: "/profile", element: <Profile /> },
-      { path: "/my-reviews", element: <MyReviews /> },
-      { path: "/booking-success", element: <BookingSuccess /> },
-      // 404 Catch-all - must be last
+
+      {
+        element: <PublicRoute />,
+        children: [
+          { path: "/auth/login", element: <Login /> },
+          { path: "/auth/signup", element: <SignUp /> },
+          { path: "/auth/forgot-password", element: <ForgotPassword /> },
+          { path: "/auth/reset-password/:token", element: <ResetPassword /> },
+        ],
+      },
+
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { path: "/my-bookings", element: <MyBookings /> },
+          { path: "/profile", element: <Profile /> },
+          { path: "/my-reviews", element: <MyReviews /> },
+          { path: "/booking-success", element: <BookingSuccess /> },
+        ],
+      },
       { path: "*", element: <NotFound /> },
     ],
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <RoleBasedRoute allowedRoles={["admin"]} />,
     errorElement: <Error />,
     children: [
-      { index: true, element: <Navigate to="dashboard" replace /> },
-      { path: "dashboard", element: <AdminDashboard /> },
-      { path: "tours", element: <AdminTours /> },
-      { path: "users", element: <AdminUsers /> },
-      { path: "bookings", element: <AdminBookings /> },
-      { path: "reviews", element: <AdminReviews /> },
-      { path: "/admin/tours/create", element: <CreateTour /> },
-      { path: "/admin/tours/edit/:id", element: <EditTour /> },
-      // Admin 404 Catch-all
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <AdminDashboard /> },
+          { path: "tours", element: <AdminTours /> },
+          { path: "users", element: <AdminUsers /> },
+          { path: "bookings", element: <AdminBookings /> },
+          { path: "reviews", element: <AdminReviews /> },
+          { path: "/admin/tours/create", element: <CreateTour /> },
+          { path: "/admin/tours/edit/:id", element: <EditTour /> },
+        ],
+      },
+
       { path: "*", element: <NotFound /> },
     ],
   },
