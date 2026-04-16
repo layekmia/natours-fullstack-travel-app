@@ -27,6 +27,6 @@ export const adminAPI = {
     deleteUser: (id: string): Promise<ApiResponse<null>> =>
         apiClient.delete(`/users/${id}`),
 
-    updateUserRole: (id: string, role: string): Promise<ApiResponse<any>> =>
+    updateUserRole: (id: string, role: string): Promise<ApiResponse<null>> =>
         apiClient.patch(`/admin/${id}/role`, { role }),
 };

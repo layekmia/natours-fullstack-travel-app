@@ -7,10 +7,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { Review } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageCircle, Star } from "lucide-react";
+import { MessageCircle, Quote, Star, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewForm } from "./ReviewForm";
@@ -34,13 +35,23 @@ export const TourReviews = ({ tourId }: TourReviewsProps) => {
 
   const reviews = data?.data || [];
 
-  // Calculate average rating
+  // Calculate statistics
   const averageRating =
     reviews.length > 0
       ? (
           reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length
         ).toFixed(1)
       : "0";
+
+  const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
+    stars: rating,
+    count: reviews.filter((r) => Math.floor(r.rating) === rating).length,
+    percentage: reviews.length
+      ? (reviews.filter((r) => Math.floor(r.rating) === rating).length /
+          reviews.length) *
+        100
+      : 0,
+  }));
 
   // Create review mutation
   const createMutation = useMutation({
@@ -100,103 +111,176 @@ export const TourReviews = ({ tourId }: TourReviewsProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 overflow-hidden">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-2xl font-bold">Reviews</h2>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex items-center gap-1">
-              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-              <span className="font-semibold text-lg">{averageRating}</span>
-            </div>
-            <span className="text-gray-500">
-              ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
-            </span>
+      <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800/50">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-primary-100 dark:bg-primary-900/50">
+            <MessageCircle className="h-4 w-4 text-primary-600 dark:text-primary-400" />
           </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Traveler Reviews
+          </h2>
         </div>
-
-        {/* Write Review Button */}
-        {isAuthenticated && (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingReview(null)}>
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Write a Review
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingReview ? "Edit Your Review" : "Write a Review"}
-                </DialogTitle>
-              </DialogHeader>
-              <ReviewForm
-                onSubmit={handleSubmitReview}
-                isSubmitting={
-                  createMutation.isPending || updateMutation.isPending
-                }
-                initialData={
-                  editingReview
-                    ? {
-                        rating: editingReview.rating,
-                        review: editingReview.review,
-                      }
-                    : undefined
-                }
-              />
-            </DialogContent>
-          </Dialog>
-        )}
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-7">
+          What our adventurers say about this experience
+        </p>
       </div>
 
-      {/* Reviews List */}
-      {isLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="flex gap-3">
-                <div className="h-10 w-10 bg-gray-200 rounded-full" />
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-32 mb-2" />
-                  <div className="h-3 bg-gray-200 rounded w-24 mb-3" />
-                  <div className="h-16 bg-gray-200 rounded" />
+      <div className="p-6">
+        {/* Rating Summary Section */}
+        {reviews.length > 0 && (
+          <div className="flex flex-col md:flex-row gap-6 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
+            {/* Average Rating Display */}
+            <div className="text-center md:text-left">
+              <div className="text-5xl font-bold text-gray-900 dark:text-white">
+                {averageRating}
+              </div>
+              <div className="flex items-center justify-center md:justify-start gap-1 mt-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${
+                      i < Math.floor(parseFloat(averageRating))
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300 dark:text-gray-600"
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Based on {reviews.length}{" "}
+                {reviews.length === 1 ? "review" : "reviews"}
+              </p>
+            </div>
+
+            {/* Rating Distribution Bars */}
+            <div className="flex-1 space-y-2">
+              {ratingDistribution.map((item) => (
+                <div key={item.stars} className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 w-12">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {item.stars}
+                    </span>
+                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  </div>
+                  <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-yellow-400 rounded-full"
+                      style={{ width: `${item.percentage}%` }}
+                    />
+                  </div>
+                  <div className="w-10 text-right">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {item.count}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Write Review Button - Enhanced */}
+        {isAuthenticated && (
+          <div className="mb-6">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => setEditingReview(null)}
+                  className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white gap-2 shadow-md hover:shadow-lg transition-all"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Share Your Experience
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] rounded-2xl">
+                <DialogHeader>
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-primary-100 dark:bg-primary-900/50">
+                      <Quote className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <DialogTitle className="text-xl font-bold">
+                      {editingReview ? "Edit Your Review" : "Write a Review"}
+                    </DialogTitle>
+                  </div>
+                </DialogHeader>
+                <ReviewForm
+                  onSubmit={handleSubmitReview}
+                  isSubmitting={
+                    createMutation.isPending || updateMutation.isPending
+                  }
+                  initialData={
+                    editingReview
+                      ? {
+                          rating: editingReview.rating,
+                          review: editingReview.review,
+                        }
+                      : undefined
+                  }
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+        )}
+
+        {/* Reviews List */}
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex gap-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-16 w-full" />
                 </div>
               </div>
+            ))}
+          </div>
+        ) : reviews.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/30 rounded-xl">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+              <MessageCircle className="h-8 w-8 text-gray-400 dark:text-gray-500" />
             </div>
-          ))}
-        </div>
-      ) : reviews.length === 0 ? (
-        <div className="text-center py-8">
-          <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-gray-900">
-            No reviews yet
-          </h3>
-          <p className="text-gray-500 mt-1">
-            Be the first to share your experience!
-          </p>
-          {isAuthenticated && (
-            <Button
-              variant="outline"
-              onClick={() => setIsDialogOpen(true)}
-              className="mt-4"
-            >
-              Write a Review
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {reviews.map((review) => (
-            <ReviewCard
-              key={review._id}
-              review={review}
-              onDelete={handleDeleteReview}
-              onEdit={handleEditReview}
-            />
-          ))}
-        </div>
-      )}
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              No reviews yet
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm mx-auto">
+              Be the first to share your experience and help other travelers
+            </p>
+            {isAuthenticated && (
+              <Button
+                variant="outline"
+                onClick={() => setIsDialogOpen(true)}
+                className="mt-4 gap-2"
+              >
+                <Star className="h-4 w-4" />
+                Write a Review
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <ReviewCard
+                key={review._id}
+                review={review}
+                onDelete={handleDeleteReview}
+                onEdit={handleEditReview}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Trust Badge */}
+        {reviews.length > 0 && (
+          <div className="mt-6 pt-4 flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-500">
+            <ThumbsUp className="h-3 w-3" />
+            <span>All reviews are from verified travelers</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -7,12 +7,14 @@ import { AdminReviews } from "@/pages/admin/AdminReviews";
 import { AdminUsers } from "@/pages/admin/AdminUsers";
 import { CreateTour } from "@/pages/admin/CreateTour";
 import { EditTour } from "@/pages/admin/EditTour";
+import { BookingSuccess } from "@/pages/BookingSuccess";
 import Error from "@/pages/Error";
 import { ForgotPassword } from "@/pages/ForgotPassword";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import { MyBookings } from "@/pages/MyBookings";
 import { MyReviews } from "@/pages/MyReviews";
+import { NotFound } from "@/pages/not-found";
 import { Profile } from "@/pages/Profile";
 import { ResetPassword } from "@/pages/ResetPassword";
 import SignUp from "@/pages/SignUp";
@@ -36,6 +38,9 @@ export const router = createBrowserRouter([
       { path: "/my-bookings", element: <MyBookings /> },
       { path: "/profile", element: <Profile /> },
       { path: "/my-reviews", element: <MyReviews /> },
+      { path: "/booking-success", element: <BookingSuccess /> },
+      // 404 Catch-all - must be last
+      { path: "*", element: <NotFound /> },
     ],
   },
   {
@@ -51,6 +56,8 @@ export const router = createBrowserRouter([
       { path: "reviews", element: <AdminReviews /> },
       { path: "/admin/tours/create", element: <CreateTour /> },
       { path: "/admin/tours/edit/:id", element: <EditTour /> },
+      // Admin 404 Catch-all
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);
