@@ -258,12 +258,12 @@ export const AdminLayout = () => {
         {/* Main Content */}
         <main
           className={cn(
-            "flex-1 transition-all duration-300",
+            "flex-1 transition-all duration-300 overflow-hidden",
             "lg:ml-64",
             !isSidebarOpen && "lg:ml-20",
           )}
         >
-          <div className="p-6 md:p-8">
+          <div className="p-6 md:p-8 ">
             <Outlet />
           </div>
         </main>

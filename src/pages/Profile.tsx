@@ -15,7 +15,6 @@ export const Profile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
         <div className="mb-8 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 text-sm font-medium mb-4">
             <Shield className="h-3 w-3" />
@@ -32,7 +31,6 @@ export const Profile = () => {
         {/* Main Card */}
         <Card className="border-0 shadow-xl overflow-hidden bg-white dark:bg-gray-900">
           <div className="relative">
-            {/* Decorative Header Bar */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700" />
 
             <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-800">
@@ -78,13 +76,13 @@ export const Profile = () => {
                 </TabsList>
 
                 <TabsContent value="profile" className="mt-0 animate-fade-in">
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-0 md:p-6">
                     <ProfileForm />
                   </div>
                 </TabsContent>
 
                 <TabsContent value="password" className="mt-0 animate-fade-in">
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-0 lg:p-6">
                     <ChangePasswordForm />
                   </div>
                 </TabsContent>

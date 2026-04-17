@@ -111,7 +111,7 @@ export function ProfileForm() {
   };
 
   return (
-    <Card className="w-full border-0 shadow-sm bg-white dark:bg-gray-900">
+    <Card className="w-full border-0  shadow-sm bg-white dark:bg-gray-900">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2 mb-1">
           <div className="p-1.5 rounded-lg bg-primary-100 dark:bg-primary-900/50">

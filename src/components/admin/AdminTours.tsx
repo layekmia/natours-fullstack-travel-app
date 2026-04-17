@@ -182,155 +182,174 @@ export const AdminTours = () => {
 
       {/* Tours Table */}
       <Card className="border-0 shadow-sm overflow-hidden">
-        <CardContent className="">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50 dark:bg-gray-900/50">
-                <TableHead className="w-[80px]">Image</TableHead>
-                <TableHead>Tour Name</TableHead>
-                <TableHead>Difficulty</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Rating</TableHead>
-                <TableHead>Bookings</TableHead>
-                <TableHead className="text-right w-[100px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton className="h-12 w-16 rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-6 w-16 rounded-full" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-12" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-16" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-20" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-12" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-8 w-8 rounded" />
-                    </TableCell>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto scrollbar-none">
+            <div className="min-w-[600px] md:min-w-full">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50 dark:bg-gray-900/50">
+                    <TableHead className="w-[70px] sm:w-[80px]">
+                      Image
+                    </TableHead>
+                    <TableHead>Tour Name</TableHead>
+                    {/* ✅ Hide on small screens */}
+                    <TableHead className="hidden sm:table-cell">
+                      Difficulty
+                    </TableHead>
+                    <TableHead className="hidden sm:table-cell">
+                      Duration
+                    </TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Rating
+                    </TableHead>
+                    <TableHead className="hidden lg:table-cell">
+                      Bookings
+                    </TableHead>
+                    <TableHead className="text-right w-[70px] sm:w-[100px]">
+                      Actions
+                    </TableHead>
                   </TableRow>
-                ))
-              ) : tours.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2">
-                      <Search className="h-12 w-12 text-gray-300 dark:text-gray-600" />
-                      <p className="text-gray-500 dark:text-gray-400">
-                        No tours found
-                      </p>
-                      <Button asChild variant="outline" size="sm">
-                        <Link to="/admin/tours/create">
-                          Create your first tour
-                        </Link>
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                tours.map((tour) => (
-                  <TableRow
-                    key={tour._id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
-                  >
-                    <TableCell>
-                      <img
-                        src={tour.imageCover}
-                        alt={tour.name}
-                        className="h-12 w-16 object-cover rounded-lg shadow-sm"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        {tour.name}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={cn(
-                          "capitalize",
-                          getDifficultyColor(tour.difficulty),
-                        )}
-                      >
-                        {tour.difficulty}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-gray-700 dark:text-gray-300">
-                      {tour.duration} days
-                    </TableCell>
-                    <TableCell className="font-semibold text-primary-600 dark:text-primary-400">
-                      {formatCurrency(tour.price)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          {tour.ratingAverage}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          ({tour.ratingQuantity})
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400">
-                        {tour.bookingCount || 0}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell>
+                          <Skeleton className="h-10 w-12 sm:h-12 sm:w-16 rounded" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-5 w-24 sm:w-32" />
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Skeleton className="h-6 w-16 rounded-full" />
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Skeleton className="h-5 w-12" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-5 w-16" />
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <Skeleton className="h-5 w-20" />
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          <Skeleton className="h-5 w-12" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-8 w-8 rounded" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : tours.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12">
+                        <div className="flex flex-col items-center gap-2">
+                          <Search className="h-12 w-12 text-gray-300 dark:text-gray-600" />
+                          <p className="text-gray-500 dark:text-gray-400">
+                            No tours found
+                          </p>
+                          <Button asChild variant="outline" size="sm">
+                            <Link to="/admin/tours/create">
+                              Create your first tour
+                            </Link>
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem asChild>
-                            <Link to={`/tours/${tour._id}`} target="_blank">
-                              <Eye className="h-4 w-4 mr-2" />
-                              View
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link to={`/admin/tours/edit/${tour._id}`}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600 focus:text-red-600"
-                            onClick={() => setDeleteTourId(tour._id)}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    tours.map((tour) => (
+                      <TableRow
+                        key={tour._id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
+                      >
+                        <TableCell>
+                          <img
+                            src={tour.imageCover}
+                            alt={tour.name}
+                            className="h-10 w-12 sm:h-12 sm:w-16 object-cover rounded-lg shadow-sm"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
+                            {tour.name.length > 20
+                              ? tour.name.slice(0, 20) + "..."
+                              : tour.name}
+                          </span>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge
+                            className={cn(
+                              "capitalize whitespace-nowrap",
+                              getDifficultyColor(tour.difficulty),
+                            )}
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                            {tour.difficulty}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                          {tour.duration} days
+                        </TableCell>
+                        <TableCell className="font-semibold text-primary-600 dark:text-primary-400 whitespace-nowrap">
+                          {formatCurrency(tour.price)}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <div className="flex items-center gap-1 whitespace-nowrap">
+                            <span className="font-semibold text-gray-900 dark:text-white">
+                              {tour.ratingAverage}
+                            </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              ({tour.ratingQuantity})
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 whitespace-nowrap">
+                            {tour.bookingCount || 0}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem asChild>
+                                <Link to={`/tours/${tour._id}`} target="_blank">
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem asChild>
+                                <Link to={`/admin/tours/edit/${tour._id}`}>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-red-600 focus:text-red-600"
+                                onClick={() => setDeleteTourId(tour._id)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

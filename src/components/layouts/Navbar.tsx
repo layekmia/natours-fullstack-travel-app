@@ -19,10 +19,9 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Settings,
   Shield,
   Star,
-  User,
+  User
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -156,10 +155,9 @@ export const Navbar = () => {
                       <span>Admin Panel</span>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/profile")}
+                  ></DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}
